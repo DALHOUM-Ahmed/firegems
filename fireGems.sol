@@ -382,7 +382,9 @@ contract fireGems is Context, ERC165, IERC721, IERC721Metadata {
   }
 
   function buyAgem() external {
-    IERC20(acetylene).transferFrom(msg.sender, address(this), getCurrentPriceInAcetylene());
+    uint256 _currentPrice = getCurrentPriceInAcetylene();
+    IERC20(acetylene).transferFrom(msg.sender, address(this), _currentPrice);
+    IERC20(acetylene).transfer(0x000000000000000000000000000000000000dEaD, (_currentPrice * 10) / 100);
     emit success(msg.sender, nextId);
     _safeMint(msg.sender, nextId);
     burnPoolAceylene();
@@ -410,7 +412,8 @@ contract fireGems is Context, ERC165, IERC721, IERC721Metadata {
   function searchForaGem() external returns (uint256 _id) {
     require(tx.origin == msg.sender, "only human");
     require(existingGems < maxSupply, "reached max supply");
-    IERC20(acetylene).transferFrom(msg.sender, (address(this)), ACEPricePerAttemp);
+    IERC20(acetylene).transferFrom(msg.sender, address(this), ACEPricePerAttemp);
+    IERC20(acetylene).transfer(0x000000000000000000000000000000000000dEaD, (ACEPricePerAttemp * 10) / 100);
     bool gemFound = craftTest();
     uint256 mintedId;
     if (gemFound) {
@@ -430,6 +433,7 @@ contract fireGems is Context, ERC165, IERC721, IERC721Metadata {
     require(_numAttempts <= 10, "10 maximum attempts");
     require(existingGems < maxSupply, "reached max supply");
     IERC20(acetylene).transferFrom(msg.sender, (address(this)), ACEPricePerAttemp * _numAttempts);
+    IERC20(acetylene).transfer(0x000000000000000000000000000000000000dEaD, (ACEPricePerAttemp * _numAttempts * 10) / 100);
     for (uint256 i = 0; i < _numAttempts; i++) {
       if (existingGems >= maxSupply) {
         break;
