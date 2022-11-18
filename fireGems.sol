@@ -142,7 +142,7 @@ contract fireGems is Context, ERC165, IERC721, IERC721Metadata {
   // Mapping from owner to operator approvals
   mapping(address => mapping(address => bool)) private _operatorApprovals;
 
-  address public acetylene = 0x1c7a781d6929cb714Ff732E775e9Ca11Cd10Eb23;
+  address public acetylene = 0x1c7a781d6929cb714Ff732E775e9Ca11Cd10Eb23; //0x1c7a781d6929cb714Ff732E775e9Ca11Cd10Eb23;
   uint256 public nextId = 1;
   uint256 public maxSupply = 100;
   uint256 public existingGems = 0;
@@ -289,7 +289,7 @@ contract fireGems is Context, ERC165, IERC721, IERC721Metadata {
 
   function currentRewardForBurningGems(uint256 _numberOfGemsToBurn) public view returns (uint256 _reward) {
     require(_numberOfGemsToBurn <= existingGems);
-    _reward = (IERC20(acetylene).balanceOf(address(this)) * _numberOfGemsToBurn) / maxSupply;
+    _reward = (IERC20(acetylene).balanceOf(address(this)) * _numberOfGemsToBurn) / existingGems;
   }
 
   function burnMyGem(uint256[] memory _ids) external {
@@ -394,7 +394,7 @@ contract fireGems is Context, ERC165, IERC721, IERC721Metadata {
 
   function random() internal returns (uint256) {
     nonce += 1;
-    return uint256(keccak256(abi.encodePacked(block.difficulty, blockhash(block.number - 1), block.timestamp, block.number, nonce)));
+    return uint256(keccak256(abi.encodePacked(block.difficulty, block.timestamp, block.number, nonce)));
   }
 
   function craftTest() internal returns (bool) {
@@ -430,7 +430,7 @@ contract fireGems is Context, ERC165, IERC721, IERC721Metadata {
   function attemptMany(uint256 _numAttempts) external returns (uint256 _minted) {
     require(tx.origin == msg.sender, "only human");
     require(_numAttempts > 0, "zero attempts");
-    require(_numAttempts <= 10, "10 maximum attempts");
+    require(_numAttempts <= 5, "5 maximum attempts");
     require(existingGems < maxSupply, "reached max supply");
     IERC20(acetylene).transferFrom(msg.sender, (address(this)), ACEPricePerAttemp * _numAttempts);
     IERC20(acetylene).transfer(0x000000000000000000000000000000000000dEaD, (ACEPricePerAttemp * _numAttempts * 10) / 100);
